@@ -1,6 +1,10 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#define OXFUEL_DENSITY 5
+#define FUEL_COST 0.8
+#define OX_COST 0.18
+
 enum diameter
 {
     TINY,
