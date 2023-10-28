@@ -7,6 +7,9 @@
 
 #define NBR_DIAMETER 8
 
+#include <stdbool.h>
+#include <stddef.h>
+
 enum diameter
 {
     TINY,
@@ -18,7 +21,7 @@ enum diameter
     MK2,
     MK3,
     DIAMX,
-}
+};
 
 enum fuel_type
 {
@@ -30,13 +33,13 @@ enum fuel_type
     ORE,
     ELECTRIC,
     FUELX,
-}
+};
 
 enum search_type
 {
     SEARCH_DELTAV,
     SEARCH_COST,
-}
+};
 
 struct tank
 {
@@ -51,7 +54,7 @@ struct tank
     double quantity_fuel2;
     bool radial_fitting;
     bool radial_art;
-}
+};
 
 struct engine
 {
@@ -65,7 +68,7 @@ struct engine
     double thrust_atm;
     double consumption;
     double gimbal;
-}
+};
 
 struct decoupler
 {
@@ -73,7 +76,7 @@ struct decoupler
     double mass;
     double cost;
     enum diameter diam;
-}
+};
 
 struct engine_plate
 {
@@ -81,7 +84,7 @@ struct engine_plate
     double mass;
     double cost;
     enum diameter diam_extern;
-}
+};
 
 struct payload
 {
@@ -89,27 +92,31 @@ struct payload
     enum diameter diam;
     double height;
     double diameter;
-}
+};
 
 struct tanks
 {
     struct tank ***elements;
-}
+    int nbr;
+};
 
 struct engines
 {
     struct engine ***elements;
-}
+    int nbr;
+};
 
 struct decouplers
 {
     struct decoupler ***elements;
-}
+    int nbr;
+};
 
 struct engine_plates
 {
-    struct engine_plate ***engine_plates;
-}
+    struct engine_plate ***elements;
+    int nbr;
+};
 
 struct datas
 {
@@ -121,9 +128,13 @@ struct datas
     struct engines *engines;
     struct decouplers *decouplers;
     struct engine_plates *engine_plates;
-    struct beta; // empty_mass / fuel_mass
-}
+    double beta; // empty_mass / fuel_mass
+};
 
 size_t indice_parts(enum diameter d);
+struct payload *create_payload(double mass, enum diameter diam, double height,
+                               double diameter);
+struct datas *create_data(struct payload *payload, double deltaV_min,
+                         double cost_max);
 
 #endif /* ! UTILS_H */

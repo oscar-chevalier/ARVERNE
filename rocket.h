@@ -8,7 +8,7 @@ struct part
     void *part_type;
     struct part *prev;
     struct part *next;
-}
+};
 
 struct stage
 {
@@ -22,12 +22,12 @@ struct stage
     enum diameter down_diam;
     struct stage *next;
     struct stage *prev;
-}
+};
 
 struct rocket
 {
     struct payload *payload;
-    Stage *first_stage;
-}
+    struct stage *first_stage;
+};
 
 #endif /* ! ROCKET_H */

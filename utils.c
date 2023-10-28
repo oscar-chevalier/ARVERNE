@@ -1,29 +1,31 @@
 #include "utils.h"
 
+#include <stdlib.h>
+
 #include "reader.h"
 
-size_t indice_parts(enum diameter diam)
+static size_t indice_diam(enum diameter diam)
 {
     return diam;
 }
 
 struct engine **select_engines_diam(struct datas *d, enum diameter diam)
 {
-    return d->engines[indice_diam(diam)];
+    return d->engines->elements[indice_diam(diam)];
 }
 
 struct decoupler **select_decouplers_diam(struct datas *d, enum diameter diam)
 {
-    return d->decouplers[indice_diam(diam)];
+    return d->decouplers->elements[indice_diam(diam)];
 }
 
-struct engine_plates **select_engine_plates_diam(struct datas *d,
+struct engine_plate **select_engine_plates_diam(struct datas *d,
                                                  enum diameter diam)
 {
-    return d->engine_plates[indice_diam(diam)];
+    return d->engine_plates->elements[indice_diam(diam)];
 }
 
-void free_data(struct data *d)
+void free_datas(struct datas *d)
 {
     //todo
     free(d);
@@ -41,23 +43,23 @@ void free_engines(struct engines *e)
     free(e);
 }
 
-void free_decouplers(struct tanks *d)
+void free_decouplers(struct decouplers *d)
 {
     //todo
     free(d);
 }
 
-void free_engine_plates(struct engines *e)
+void free_engine_plates(struct engine_plates *e)
 {
     //todo
     free(e);
 }
 
-static bool define_tanks(struct data *d)
+static bool define_tanks(struct datas *d)
 {
     if (!d)
         return false;
-    struct tanks *tanks = malloc(sizeof(struct tanks));
+    struct tanks *tanks = calloc(1, sizeof(struct tanks));
     if (!tanks)
         return false;
     tanks->elements = calloc(NBR_DIAMETER, sizeof(struct tank **));
@@ -70,11 +72,11 @@ static bool define_tanks(struct data *d)
     return true;
 }
 
-static bool define_engines(struct data *d)
+static bool define_engines(struct datas *d)
 {
     if (!d)
         return false;
-    struct engines *engines = malloc(sizeof(struct engines));
+    struct engines *engines = calloc(1, sizeof(struct engines));
     if (!engines)
         return false;
     engines->elements = calloc(NBR_DIAMETER, sizeof(struct engine **));
@@ -87,11 +89,11 @@ static bool define_engines(struct data *d)
     return true;
 }
 
-static bool define_decouplers(struct data *d)
+static bool define_decouplers(struct datas *d)
 {
     if (!d)
         return false;
-    struct decouplers *decouplers = malloc(sizeof(struct decouplers));
+    struct decouplers *decouplers = calloc(1, sizeof(struct decouplers));
     if (!decouplers)
         return false;
     decouplers->elements = calloc(NBR_DIAMETER, sizeof(struct decoupler **));
@@ -104,35 +106,48 @@ static bool define_decouplers(struct data *d)
     return true;
 }
 
-static bool define_engine_plates(struct data *d)
+static bool define_engine_plates(struct datas *d)
 {
     if (!d)
         return false;
-    struct engine_plates *engines = malloc(sizeof(struct engine_plates));
+    struct engine_plates *engines = calloc(1, sizeof(struct engine_plates));
     if (!engines)
         return false;
     engines->elements = calloc(NBR_DIAMETER, sizeof(struct engines_plate **));
     if (!engines->elements)
     {
-        free_engines(engines);
+        free_engine_plates(engines);
         return false;
     }
-    d->engines = engines;
+    d->engine_plates = engines;
     return true;
 }
 
-struct data *create_data(struct payload *payload, double deltaV_min,
+struct payload *create_payload(double mass, enum diameter diam, double height,
+                               double diameter)
+{
+    struct payload *payload = malloc(sizeof(struct payload));
+    if (!payload)
+        return NULL;
+    payload->mass = mass;
+    payload->diam = diam;
+    payload->height = height;
+    payload->diameter = diameter;
+    return payload;
+}
+
+struct datas *create_data(struct payload *payload, double deltaV_min,
                          double cost_max)
 {
     if ((deltaV_min && cost_max) || (!deltaV_min && !cost_max))
         return NULL;
-    struct data *d = malloc(sizeof(struct data));
+    struct datas *d = malloc(sizeof(struct datas));
     if (!d)
         return NULL;
     d->deltaV_min = deltaV_min;
     d->cost_max = cost_max;
     if (deltaV_min)
-        d->search_type = SEACH_DELTAV;
+        d->search_type = SEARCH_DELTAV;
     else
         d->search_type = SEARCH_COST;
     d->payload = payload;
@@ -159,47 +174,3 @@ struct data *create_data(struct payload *payload, double deltaV_min,
     d->beta = 1/8;
     return d;
 }
-
-struct part *create_tank(struct tank *t)
-{
-    if (!t)
-        return NULL;
-    struct part *p = calloc(1, sizeof(struct part));
-    if (!p)
-        return NULL;
-    p->part_type = t;
-    return p;
-}
-
-struct part *create_engine(struct engine *e)
-{
-    if (!e)
-        return NULL;
-    struct part *p = calloc(1, sizeof(struct part));
-    if (!p)
-        return NULL;
-    p->part_type = e;
-    return p;
-}
-
-struct part *create_decoupler(struct decoupler *d)
-{
-    if (!d)
-        return NULL;
-    struct part *p = calloc(1, sizeof(struct part));
-    if (!p)
-        return NULL;
-    p->part_type = d;
-    return p;
-}
-
-struct part *create_engine_plate(struct engine_plate *e)
-{
-    if (!e)
-        return NULL;
-    struct part *p = calloc(1, sizeof(struct part));
-    if (!p)
-        return NULL;
-    p->part_type = e;
-    return p;
-
