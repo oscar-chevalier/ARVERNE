@@ -11,6 +11,6 @@ test: $(OBJ) $(TOBJ)
 	./test
 
 clean:
-	$(RM) $(OBJ)
+	$(RM) $(OBJ) $(TOBJ) test
 
-.PHONY: clean
+.PHONY: clean test
