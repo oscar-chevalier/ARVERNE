@@ -5,6 +5,8 @@
 #define FUEL_COST 0.8
 #define OX_COST 0.18
 
+#define NBR_DIAMETER 8
+
 enum diameter
 {
     TINY,
@@ -26,6 +28,12 @@ enum fuel_type
     XENON,
     ORE,
     ELECTRIC,
+}
+
+enum search_type
+{
+    SEARCH_DELTAV,
+    SEARCH_COST,
 }
 
 struct tank
@@ -81,16 +89,39 @@ struct payload
     double diameter;
 }
 
+struct tanks
+{
+    struct tank ***elements;
+}
+
+struct engines
+{
+    struct engine ***elements;
+}
+
+struct decouplers
+{
+    struct decoupler ***elements;
+}
+
+struct engine_plates
+{
+    struct engine_plate ***engine_plates;
+}
+
 struct datas
 {
     double deltaV_min;
     double cost_max;
+    enum search_type search_type;
     struct payload *payload;
-    struct tanks ***tanks;
-    struct engine ***engines;
-    struct decoupler ***decouplers;
-    struct engine_plate ***engine_plates;
+    struct tanks *tanks;
+    struct engines *engines;
+    struct decouplers *decouplers;
+    struct engine_plates *engine_plates;
     struct beta; // empty_mass / fuel_mass
 }
+
+size_t indice_parts(enum diameter d);
 
 #endif /* ! UTILS_H */
