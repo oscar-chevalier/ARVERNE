@@ -132,6 +132,8 @@ struct datas
 };
 
 size_t indice_parts(enum diameter d);
+void free_payload(struct payload *p);
+void free_datas(struct datas *d);
 struct payload *create_payload(double mass, enum diameter diam, double height,
                                double diameter);
 struct datas *create_data(struct payload *payload, double deltaV_min,

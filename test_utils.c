@@ -10,6 +10,7 @@ Test(test_utils, create_payload)
     cr_expect_eq(p->diam, SMALL);
     cr_expect_eq(p->height, 1);
     cr_expect_eq(p->diameter, 2);
+    free_payload(p);
 }
 
 Test(test_utils, create_data)
@@ -19,4 +20,5 @@ Test(test_utils, create_data)
     cr_assert_neq(d, NULL);
     cr_expect_eq(d->deltaV_min, 1000);
     cr_expect_eq(d->cost_max, 0);
+    free_datas(d);
 }

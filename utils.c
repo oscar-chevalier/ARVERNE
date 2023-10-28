@@ -25,34 +25,47 @@ struct engine_plate **select_engine_plates_diam(struct datas *d,
     return d->engine_plates->elements[indice_diam(diam)];
 }
 
-void free_datas(struct datas *d)
+void free_payload(struct payload *p)
 {
-    //todo
-    free(d);
+    free(p);
 }
 
 void free_tanks(struct tanks *t)
 {
+    free(t->elements);
     //todo
     free(t);
 }
 
 void free_engines(struct engines *e)
 {
+    free(e->elements);
     //todo
     free(e);
 }
 
 void free_decouplers(struct decouplers *d)
 {
+    free(d->elements);
     //todo
     free(d);
 }
 
 void free_engine_plates(struct engine_plates *e)
 {
+    free(e->elements);
     //todo
     free(e);
+}
+
+void free_datas(struct datas *d)
+{
+    free_payload(d->payload);
+    free_tanks(d->tanks);
+    free_engines(d->engines);
+    free_decouplers(d->decouplers);
+    free_engine_plates(d->engine_plates);
+    free(d);
 }
 
 static bool define_tanks(struct datas *d)
