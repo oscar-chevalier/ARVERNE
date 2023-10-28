@@ -1,10 +1,10 @@
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -std=gnu99
 
-OBJ = main.o
+OBJ = main.o rocket.o
 
-test:
-    CFLAGS += -fsanitize=address
+test: $(OBJ)
+	CFLAGS += -fsanitize=address
 
 clean:
 	$(RM) $(OBJ)
