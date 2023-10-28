@@ -17,6 +17,7 @@ enum diameter
     HUGE,
     MK2,
     MK3,
+    DIAMX,
 }
 
 enum fuel_type
@@ -28,6 +29,7 @@ enum fuel_type
     XENON,
     ORE,
     ELECTRIC,
+    FUELX,
 }
 
 enum search_type
