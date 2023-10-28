@@ -1,6 +1,8 @@
 #ifndef ROCKET_H
 #define ROCKET_H
 
+#include "utils.h"
+
 struct tank
 {
     char *name;
@@ -80,3 +82,5 @@ struct rocket
     struct payload *payload;
     Stage *first_stage;
 }
+
+#endif /* ! ROCKET_H */
