@@ -60,7 +60,7 @@ static bool define_tanks(struct data *d)
     struct tanks *tanks = malloc(sizeof(struct tanks));
     if (!tanks)
         return false;
-    tanks->elements = calloc(NBR_DIAMETER, sizeof(struct tanks));
+    tanks->elements = calloc(NBR_DIAMETER, sizeof(struct tank **));
     if (!tanks->elements)
     {
         free_tanks(tanks);
@@ -77,7 +77,41 @@ static bool define_engines(struct data *d)
     struct engines *engines = malloc(sizeof(struct engines));
     if (!engines)
         return false;
-    engines->elements = calloc(NBR_DIAMETER, sizeof(struct engines));
+    engines->elements = calloc(NBR_DIAMETER, sizeof(struct engine **));
+    if (!engines->elements)
+    {
+        free_engines(engines);
+        return false;
+    }
+    d->engines = engines;
+    return true;
+}
+
+static bool define_decouplers(struct data *d)
+{
+    if (!d)
+        return false;
+    struct decouplers *decouplers = malloc(sizeof(struct decouplers));
+    if (!decouplers)
+        return false;
+    decouplers->elements = calloc(NBR_DIAMETER, sizeof(struct decoupler **));
+    if (!decouplers->elements)
+    {
+        free_decouplers(decouplers);
+        return false;
+    }
+    d->decouplers = decouplers;
+    return true;
+}
+
+static bool define_engine_plates(struct data *d)
+{
+    if (!d)
+        return false;
+    struct engine_plates *engines = malloc(sizeof(struct engine_plates));
+    if (!engines)
+        return false;
+    engines->elements = calloc(NBR_DIAMETER, sizeof(struct engines_plate **));
     if (!engines->elements)
     {
         free_engines(engines);
@@ -112,6 +146,18 @@ struct data *create_data(struct payload *payload, double deltaV_min,
         free_datas(d);
         return NULL;
     }
+    if (!define_engine_plates(d))
+    {
+        free_datas(d);
+        return NULL;
+    }
+    if (!define_decouplers(d))
+    {
+        free_datas(d);
+        return NULL;
+    }
+    d->beta = 1/8;
+    return d;
 }
 
 struct part *create_tank(struct tank *t)

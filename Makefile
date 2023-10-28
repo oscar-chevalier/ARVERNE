@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -std=gnu99
 
-OBJ = main.o rocket.o
+OBJ = main.o rocket.o utils.o reader.o
 
 test: $(OBJ)
 	CFLAGS += -fsanitize=address
