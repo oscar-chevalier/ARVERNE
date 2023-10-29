@@ -97,25 +97,25 @@ struct payload
 struct tanks
 {
     struct tank ***elements;
-    int nbr;
+    int *nbr;
 };
 
 struct engines
 {
     struct engine ***elements;
-    int nbr;
+    int *nbr;
 };
 
 struct decouplers
 {
     struct decoupler ***elements;
-    int nbr;
+    int *nbr;
 };
 
 struct engine_plates
 {
     struct engine_plate ***elements;
-    int nbr;
+    int *nbr;
 };
 
 struct datas

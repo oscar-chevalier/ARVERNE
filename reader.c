@@ -9,8 +9,9 @@
 static char **cut_line(char *line)
 {
     char **ptrs = calloc(100, sizeof(char *));
+    ptrs[0] = line;
     int state = 0;
-    size_t j = 0;
+    size_t j = 1;
     for (size_t i = 0; line[i]; i++)
     {
         if (line[i] == ';')
@@ -62,11 +63,15 @@ static enum diameter str_to_diam(char *s)
 
 static bool add_engine(struct engines *engines, struct engine *e)
 {
-    engines->elements = realloc(engines->elements, engines->nbr + 1);
+    if (!engines->nbr[e->diam])
+        engines->elements[e->diam] = malloc(sizeof(struct engine **));
+    else
+        engines->elements[e->diam] = realloc(engines->elements[e->diam],
+                                             engines->nbr[e->diam] + 1);
     if (!engines->elements)
         return false;
-    engines->elements[e->diam][engines->nbr] = e;
-    engines->nbr++;
+    engines->elements[e->diam][engines->nbr[e->diam]] = e;
+    engines->nbr[e->diam]++;
     return true;
 }
 

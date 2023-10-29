@@ -81,6 +81,12 @@ static bool define_tanks(struct datas *d)
         free_tanks(tanks);
         return false;
     }
+    tanks->nbr = calloc(NBR_DIAMETER, sizeof(int));
+    if (!tanks->nbr)
+    {
+        free_tanks(tanks);
+        return false;
+    }
     d->tanks = tanks;
     return true;
 }
@@ -98,8 +104,14 @@ static bool define_engines(struct datas *d)
         free_engines(engines);
         return false;
     }
+    engines->nbr = calloc(NBR_DIAMETER, sizeof(int));
+    if (!engines->nbr)
+    {
+        free_engines(engines);
+        return false;
+    }
     d->engines = engines;
-    return true;
+    return read_engines(d, "engines") > 0;
 }
 
 static bool define_decouplers(struct datas *d)
@@ -111,6 +123,12 @@ static bool define_decouplers(struct datas *d)
         return false;
     decouplers->elements = calloc(NBR_DIAMETER, sizeof(struct decoupler **));
     if (!decouplers->elements)
+    {
+        free_decouplers(decouplers);
+        return false;
+    }
+    decouplers->nbr = calloc(NBR_DIAMETER, sizeof(int));
+    if (!decouplers->nbr)
     {
         free_decouplers(decouplers);
         return false;
@@ -128,6 +146,12 @@ static bool define_engine_plates(struct datas *d)
         return false;
     engines->elements = calloc(NBR_DIAMETER, sizeof(struct engines_plate **));
     if (!engines->elements)
+    {
+        free_engine_plates(engines);
+        return false;
+    }
+    engines->nbr = calloc(NBR_DIAMETER, sizeof(int));
+    if (!engines->nbr)
     {
         free_engine_plates(engines);
         return false;
