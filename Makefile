@@ -10,7 +10,11 @@ test: $(OBJ) $(TOBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LDLIBS)
 	./test
 
+debug: CFLAGS += -g
+debug: $(OBJ) debug.o
+	$(CC) -o $@ $^ $(CFLAGS) $(LDLIBS)
+
 clean:
-	$(RM) $(OBJ) $(TOBJ) test
+	$(RM) $(OBJ) $(TOBJ) test debug debug.o
 
 .PHONY: clean test
