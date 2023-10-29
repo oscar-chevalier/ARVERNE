@@ -33,6 +33,7 @@ void free_payload(struct payload *p)
 void free_tanks(struct tanks *t)
 {
     free(t->elements);
+    free(t->nbr);
     //todo
     free(t);
 }
@@ -40,6 +41,7 @@ void free_tanks(struct tanks *t)
 void free_engines(struct engines *e)
 {
     free(e->elements);
+    free(e->nbr);
     //todo
     free(e);
 }
@@ -47,6 +49,7 @@ void free_engines(struct engines *e)
 void free_decouplers(struct decouplers *d)
 {
     free(d->elements);
+    free(d->nbr);
     //todo
     free(d);
 }
@@ -54,6 +57,7 @@ void free_decouplers(struct decouplers *d)
 void free_engine_plates(struct engine_plates *e)
 {
     free(e->elements);
+    free(e->nbr);
     //todo
     free(e);
 }

@@ -9,9 +9,14 @@ test: LDLIBS += -lcriterion -fsanitize=address
 test: $(OBJ) $(TOBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LDLIBS)
 	./test
-
+debug: CFLAGS = -Wall -Wextra -std=gnu99
 debug: CFLAGS += -g
 debug: $(OBJ) debug.o
+	$(CC) -o $@ $^ $(CFLAGS) $(LDLIBS)
+
+debugs: CFLAGS += -g -fsanitize=address
+debugs: LDLIBS += -fsanitize=address
+debugs: $(OBJ) debug.o
 	$(CC) -o $@ $^ $(CFLAGS) $(LDLIBS)
 
 clean:

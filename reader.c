@@ -16,7 +16,7 @@ static char **cut_line(char *line)
     {
         if (line[i] == ';')
         {
-            line[i] = 0;
+            line[i] = '\0';
             state = 1;
         }
         else if (state == 1)
@@ -64,10 +64,14 @@ static enum diameter str_to_diam(char *s)
 static bool add_engine(struct engines *engines, struct engine *e)
 {
     if (!engines->nbr[e->diam])
-        engines->elements[e->diam] = malloc(sizeof(struct engine *));
+    {
+        struct engine **eng = malloc(sizeof(struct engine *));
+        engines->elements[e->diam] = eng;
+    }
     else
         engines->elements[e->diam] = realloc(engines->elements[e->diam],
-                                             engines->nbr[e->diam] + 1);
+                                             sizeof(struct engine *)
+                                             * (engines->nbr[e->diam] + 1));
     if (!engines->elements)
         return false;
     engines->elements[e->diam][engines->nbr[e->diam]] = e;
@@ -86,6 +90,7 @@ static bool read_engine(struct datas *d, char **ptrs)
         free(e);
         return false;
     }
+    e->name = calloc(strlen(ptrs[0]) + 1, sizeof(char));
     e->name = strcpy(e->name, ptrs[0]);
     e->mass = atof(ptrs[1]);
     e->cost = atof(ptrs[2]);
