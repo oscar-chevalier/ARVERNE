@@ -61,6 +61,30 @@ static enum diameter str_to_diam(char *s)
     return DIAMX;
 }
 
+static bool str_to_bool(char *s)
+{
+    return !strcmp(s, "TRUE");
+}
+
+static bool add_tank(struct tanks *tanks, struct tank *t)
+{
+    if (!tanks->nbr[t->top_diam])
+    {
+        struct tank **tan = malloc(sizeof(struct tank *));
+        tanks->elements[t->top_diam] = tan;
+    }
+    else
+        tanks->elements[t->top_diam] = realloc(tanks->elements[t->top_diam],
+                                               sizeof(struct tank *)
+                                               * (tanks->nbr[t->top_diam]
+                                                  + 1));
+    if (!tanks->elements)
+        return false;
+    tanks->elements[t->top_diam][tanks->nbr[t->top_diam]] = t;
+    tanks->nbr[t->top_diam]++;
+    return true;
+}
+
 static bool add_engine(struct engines *engines, struct engine *e)
 {
     if (!engines->nbr[e->diam])
@@ -76,6 +100,40 @@ static bool add_engine(struct engines *engines, struct engine *e)
         return false;
     engines->elements[e->diam][engines->nbr[e->diam]] = e;
     engines->nbr[e->diam]++;
+    return true;
+}
+
+static bool read_tank(struct datas *d, char **ptrs)
+{
+    struct tank *t = calloc(1, sizeof(struct tank));
+    if (!t)
+        return false;
+    t->name = calloc(1, sizeof(ptrs[1] - ptrs[0]));
+    if (!t->name)
+    {
+        free(t);
+        return false;
+    }
+    t->name = calloc(strlen(ptrs[0]) + 1, sizeof(char));
+    t->name = strcpy(t->name, ptrs[0]);
+    t->empty_mass = atof(ptrs[1]);
+    t->full_mass = atof(ptrs[2]);
+    t->empty_cost = atof(ptrs[3]);
+    t->top_diam = str_to_diam(ptrs[4]);
+    if (t->top_diam == DIAMX)
+        return false;
+    t->down_diam = str_to_diam(ptrs[5]);
+    if (t->down_diam == DIAMX)
+        return false;
+    t->fuel_type = str_to_fuel(ptrs[6]);
+    if (t->fuel_type == FUELX)
+        return false;
+    t->quantity_fuel1 = atof(ptrs[7]);
+    t->quantity_fuel2 = atof(ptrs[8]);
+    t->radial_fitting = str_to_bool(ptrs[9]);
+    t->radial_part = str_to_bool(ptrs[10]);
+    if (!add_tank(d->tanks, t))
+        return false;
     return true;
 }
 
@@ -126,6 +184,34 @@ int read_engines(struct datas *d, const char *pathname)
         nbr_line_read++;
         char **ptrs = cut_line(line);
         if (!read_engine(d, ptrs))
+        {
+            free(ptrs);
+            free(line);
+            return -1;
+        }
+        free(ptrs);
+    }
+    if (line)
+        free(line);
+    return nbr_line_read;
+}
+
+int read_tanks(struct datas *d, const char *pathname)
+{
+    if (!pathname)
+        return -1;
+    int nbr_line_read = 0;
+    FILE *file = fopen(pathname, "r");
+    if (!file)
+        return -1;
+    char *line = NULL;
+    ssize_t read;
+    size_t len = 0;
+    while ((read = getline(&line, &len, file)) != -1)
+    {
+        nbr_line_read++;
+        char **ptrs = cut_line(line);
+        if (!read_tank(d, ptrs))
         {
             free(ptrs);
             free(line);

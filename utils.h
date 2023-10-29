@@ -53,7 +53,7 @@ struct tank
     double quantity_fuel1;
     double quantity_fuel2;
     bool radial_fitting;
-    bool radial_art;
+    bool radial_part;
 };
 
 struct engine
