@@ -108,12 +108,6 @@ static bool read_tank(struct datas *d, char **ptrs)
     struct tank *t = calloc(1, sizeof(struct tank));
     if (!t)
         return false;
-    t->name = calloc(1, sizeof(ptrs[1] - ptrs[0]));
-    if (!t->name)
-    {
-        free(t);
-        return false;
-    }
     t->name = calloc(strlen(ptrs[0]) + 1, sizeof(char));
     t->name = strcpy(t->name, ptrs[0]);
     t->empty_mass = atof(ptrs[1]);
@@ -142,12 +136,6 @@ static bool read_engine(struct datas *d, char **ptrs)
     struct engine *e = calloc(1, sizeof(struct engine));
     if (!e)
         return false;
-    e->name = calloc(1, sizeof(ptrs[1] - ptrs[0]));
-    if (!e->name)
-    {
-        free(e);
-        return false;
-    }
     e->name = calloc(strlen(ptrs[0]) + 1, sizeof(char));
     e->name = strcpy(e->name, ptrs[0]);
     e->mass = atof(ptrs[1]);

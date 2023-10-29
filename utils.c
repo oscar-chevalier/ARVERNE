@@ -32,14 +32,31 @@ void free_payload(struct payload *p)
 
 void free_tanks(struct tanks *t)
 {
+    for (size_t i = 0; i < NBR_DIAMETER; i++)
+    {
+        for (int j = 0; j < t->nbr[i]; j++)
+        {
+            free(t->elements[i][j]->name);
+            free(t->elements[i][j]);
+        }
+        free(t->elements[i]);
+    }
     free(t->elements);
     free(t->nbr);
-    //todo
     free(t);
 }
 
 void free_engines(struct engines *e)
 {
+    for (size_t i = 0; i < NBR_DIAMETER; i++)
+    {
+        for (int j = 0; j < e->nbr[i]; j++)
+        {
+            free(e->elements[i][j]->name);
+            free(e->elements[i][j]);
+        }
+        free(e->elements[i]);
+    }
     free(e->elements);
     free(e->nbr);
     //todo
@@ -92,7 +109,7 @@ static bool define_tanks(struct datas *d)
         return false;
     }
     d->tanks = tanks;
-    return true;
+    return read_tanks(d, "tanks") > 0;
 }
 
 static bool define_engines(struct datas *d)
