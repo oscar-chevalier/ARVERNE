@@ -64,7 +64,7 @@ static enum diameter str_to_diam(char *s)
 static bool add_engine(struct engines *engines, struct engine *e)
 {
     if (!engines->nbr[e->diam])
-        engines->elements[e->diam] = malloc(sizeof(struct engine **));
+        engines->elements[e->diam] = malloc(sizeof(struct engine *));
     else
         engines->elements[e->diam] = realloc(engines->elements[e->diam],
                                              engines->nbr[e->diam] + 1);
