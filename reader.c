@@ -121,6 +121,24 @@ static bool add_decoupler(struct decouplers *decouplers, struct decoupler *d)
     return true;
 }
 
+static bool add_engine_plate(struct engine_plates *engine_plates, struct engine_plate *e)
+{
+    if (!engine_plates->nbr[e->diam])
+    {
+        struct engine_plate **eng = malloc(sizeof(struct engine_plate *));
+        engine_plates->elements[e->diam] = eng;
+    }
+    else
+        engine_plates->elements[e->diam] = realloc(engine_plates->elements[e->diam],
+                                             sizeof(struct engine_plate *)
+                                             * (engine_plates->nbr[e->diam] + 1));
+    if (!engine_plates->elements)
+        return false;
+    engine_plates->elements[e->diam][engine_plates->nbr[e->diam]] = e;
+    engine_plates->nbr[e->diam]++;
+    return true;
+}
+
 static bool read_tank(struct datas *d, char **ptrs)
 {
     struct tank *t = calloc(1, sizeof(struct tank));
@@ -187,6 +205,23 @@ static bool read_decoupler(struct datas *d, char **ptrs)
     if (e->diam == DIAMX)
         return false;
     if (!add_decoupler(d->decouplers, e))
+        return false;
+    return true;
+}
+
+static bool read_engine_plate(struct datas *d, char **ptrs)
+{
+    struct engine_plate *e = calloc(1, sizeof(struct engine_plate));
+    if (!e)
+        return false;
+    e->name = calloc(strlen(ptrs[0]) + 1, sizeof(char));
+    e->name = strcpy(e->name, ptrs[0]);
+    e->mass = strtod(ptrs[1], NULL);
+    e->cost = strtod(ptrs[2], NULL);
+    e->diam = str_to_diam(ptrs[3]);
+    if (e->diam == DIAMX)
+        return false;
+    if (!add_engine_plate(d->engine_plates, e))
         return false;
     return true;
 }
@@ -260,6 +295,32 @@ int read_decouplers(struct datas *d, const char *pathname)
         nbr_line_read++;
         char **ptrs = cut_line(line);
         if (!read_decoupler(d, ptrs))
+        {
+            free(ptrs);
+            free(line);
+            return -1;
+        }
+        free(ptrs);
+    }
+    if (line)
+        free(line);
+    return nbr_line_read;
+}
+int read_engine_plates(struct datas *d, const char *pathname)
+{
+    if (!pathname)
+        return -1;
+    int nbr_line_read = 0;
+    FILE *file = fopen(pathname, "r");
+    if (!file)
+        return -1;
+    char *line = NULL;
+    size_t len = 0;
+    while ((getline(&line, &len, file)) != -1)
+    {
+        nbr_line_read++;
+        char **ptrs = cut_line(line);
+        if (!read_engine_plate(d, ptrs))
         {
             free(ptrs);
             free(line);

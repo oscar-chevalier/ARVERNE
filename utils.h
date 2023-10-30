@@ -83,7 +83,7 @@ struct engine_plate
     char *name;
     double mass;
     double cost;
-    enum diameter diam_extern;
+    enum diameter diam;
 };
 
 struct payload

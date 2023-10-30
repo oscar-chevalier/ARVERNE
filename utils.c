@@ -59,7 +59,6 @@ void free_engines(struct engines *e)
     }
     free(e->elements);
     free(e->nbr);
-    //todo
     free(e);
 }
 
@@ -81,9 +80,17 @@ void free_decouplers(struct decouplers *d)
 
 void free_engine_plates(struct engine_plates *e)
 {
+    for (size_t i = 0; i < NBR_DIAMETER; i++)
+    {
+        for (int j = 0; j < e->nbr[i]; j++)
+        {
+            free(e->elements[i][j]->name);
+            free(e->elements[i][j]);
+        }
+        free(e->elements[i]);
+    }
     free(e->elements);
     free(e->nbr);
-    //todo
     free(e);
 }
 
@@ -186,7 +193,7 @@ static bool define_engine_plates(struct datas *d)
         return false;
     }
     d->engine_plates = engines;
-    return true;
+    return read_engine_plates(d, "engine_plates.csv") > 0;
 }
 
 struct payload *create_payload(double mass, enum diameter diam, double height,
