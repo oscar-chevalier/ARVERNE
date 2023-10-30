@@ -14,7 +14,7 @@ static char **cut_line(char *line)
     size_t j = 1;
     for (size_t i = 0; line[i]; i++)
     {
-        if (line[i] == ';')
+        if (line[i] == ';' || line[i] == '\n')
         {
             line[i] = '\0';
             state = 1;
@@ -103,6 +103,24 @@ static bool add_engine(struct engines *engines, struct engine *e)
     return true;
 }
 
+static bool add_decoupler(struct decouplers *decouplers, struct decoupler *d)
+{
+    if (!decouplers->nbr[d->diam])
+    {
+        struct decoupler **dec = malloc(sizeof(struct decoupler *));
+        decouplers->elements[d->diam] = dec;
+    }
+    else
+        decouplers->elements[d->diam] = realloc(decouplers->elements[d->diam],
+                                             sizeof(struct decoupler *)
+                                             * (decouplers->nbr[d->diam] + 1));
+    if (!decouplers->elements)
+        return false;
+    decouplers->elements[d->diam][decouplers->nbr[d->diam]] = d;
+    decouplers->nbr[d->diam]++;
+    return true;
+}
+
 static bool read_tank(struct datas *d, char **ptrs)
 {
     struct tank *t = calloc(1, sizeof(struct tank));
@@ -110,9 +128,9 @@ static bool read_tank(struct datas *d, char **ptrs)
         return false;
     t->name = calloc(strlen(ptrs[0]) + 1, sizeof(char));
     t->name = strcpy(t->name, ptrs[0]);
-    t->empty_mass = atof(ptrs[1]);
-    t->full_mass = atof(ptrs[2]);
-    t->empty_cost = atof(ptrs[3]);
+    t->empty_mass = strtod(ptrs[1], NULL);
+    t->full_mass = strtod(ptrs[2], NULL);
+    t->empty_cost = strtod(ptrs[3], NULL);
     t->top_diam = str_to_diam(ptrs[4]);
     if (t->top_diam == DIAMX)
         return false;
@@ -122,8 +140,8 @@ static bool read_tank(struct datas *d, char **ptrs)
     t->fuel_type = str_to_fuel(ptrs[6]);
     if (t->fuel_type == FUELX)
         return false;
-    t->quantity_fuel1 = atof(ptrs[7]);
-    t->quantity_fuel2 = atof(ptrs[8]);
+    t->quantity_fuel1 = strtod(ptrs[7], NULL);
+    t->quantity_fuel2 = strtod(ptrs[8], NULL);
     t->radial_fitting = str_to_bool(ptrs[9]);
     t->radial_part = str_to_bool(ptrs[10]);
     if (!add_tank(d->tanks, t))
@@ -138,20 +156,37 @@ static bool read_engine(struct datas *d, char **ptrs)
         return false;
     e->name = calloc(strlen(ptrs[0]) + 1, sizeof(char));
     e->name = strcpy(e->name, ptrs[0]);
-    e->mass = atof(ptrs[1]);
-    e->cost = atof(ptrs[2]);
+    e->mass = strtod(ptrs[1], NULL);
+    e->cost = strtod(ptrs[2], NULL);
     e->fuel = str_to_fuel(ptrs[3]);
     if (e->fuel == FUELX)
         return false;
     e->diam = str_to_diam(ptrs[4]);
     if (e->diam == DIAMX)
         return false;
-    e->ISP_atm = atoi(ptrs[5]);
-    e->ISP_vac = atoi(ptrs[6]);
-    e->thrust_atm = atof(ptrs[7]);
-    e->consumption = atof(ptrs[8]);
-    e->gimbal = atof(ptrs[9]);
+    e->ISP_atm = strtol(ptrs[5], NULL, 10);
+    e->ISP_vac = strtol(ptrs[6], NULL, 10);
+    e->thrust_atm = strtod(ptrs[7], NULL);
+    e->consumption = strtod(ptrs[8], NULL);
+    e->gimbal = strtod(ptrs[9], NULL);
     if (!add_engine(d->engines, e))
+        return false;
+    return true;
+}
+
+static bool read_decoupler(struct datas *d, char **ptrs)
+{
+    struct decoupler *e = calloc(1, sizeof(struct decoupler));
+    if (!e)
+        return false;
+    e->name = calloc(strlen(ptrs[0]) + 1, sizeof(char));
+    e->name = strcpy(e->name, ptrs[0]);
+    e->mass = strtod(ptrs[1], NULL);
+    e->cost = strtod(ptrs[2], NULL);
+    e->diam = str_to_diam(ptrs[3]);
+    if (e->diam == DIAMX)
+        return false;
+    if (!add_decoupler(d->decouplers, e))
         return false;
     return true;
 }
@@ -165,9 +200,8 @@ int read_engines(struct datas *d, const char *pathname)
     if (!file)
         return -1;
     char *line = NULL;
-    ssize_t read;
     size_t len = 0;
-    while ((read = getline(&line, &len, file)) != -1)
+    while ((getline(&line, &len, file)) != -1)
     {
         nbr_line_read++;
         char **ptrs = cut_line(line);
@@ -193,13 +227,39 @@ int read_tanks(struct datas *d, const char *pathname)
     if (!file)
         return -1;
     char *line = NULL;
-    ssize_t read;
     size_t len = 0;
-    while ((read = getline(&line, &len, file)) != -1)
+    while ((getline(&line, &len, file)) != -1)
     {
         nbr_line_read++;
         char **ptrs = cut_line(line);
         if (!read_tank(d, ptrs))
+        {
+            free(ptrs);
+            free(line);
+            return -1;
+        }
+        free(ptrs);
+    }
+    if (line)
+        free(line);
+    return nbr_line_read;
+}
+
+int read_decouplers(struct datas *d, const char *pathname)
+{
+    if (!pathname)
+        return -1;
+    int nbr_line_read = 0;
+    FILE *file = fopen(pathname, "r");
+    if (!file)
+        return -1;
+    char *line = NULL;
+    size_t len = 0;
+    while ((getline(&line, &len, file)) != -1)
+    {
+        nbr_line_read++;
+        char **ptrs = cut_line(line);
+        if (!read_decoupler(d, ptrs))
         {
             free(ptrs);
             free(line);

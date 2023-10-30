@@ -65,9 +65,17 @@ void free_engines(struct engines *e)
 
 void free_decouplers(struct decouplers *d)
 {
+    for (size_t i = 0; i < NBR_DIAMETER; i++)
+    {
+        for (int j = 0; j < d->nbr[i]; j++)
+        {
+            free(d->elements[i][j]->name);
+            free(d->elements[i][j]);
+        }
+        free(d->elements[i]);
+    }
     free(d->elements);
     free(d->nbr);
-    //todo
     free(d);
 }
 
@@ -109,7 +117,7 @@ static bool define_tanks(struct datas *d)
         return false;
     }
     d->tanks = tanks;
-    return read_tanks(d, "tanks") > 0;
+    return read_tanks(d, "tanks.csv") > 0;
 }
 
 static bool define_engines(struct datas *d)
@@ -132,7 +140,7 @@ static bool define_engines(struct datas *d)
         return false;
     }
     d->engines = engines;
-    return read_engines(d, "engines") > 0;
+    return read_engines(d, "engines.csv") > 0;
 }
 
 static bool define_decouplers(struct datas *d)
@@ -155,7 +163,7 @@ static bool define_decouplers(struct datas *d)
         return false;
     }
     d->decouplers = decouplers;
-    return true;
+    return read_decouplers(d, "decouplers.csv") > 0;
 }
 
 static bool define_engine_plates(struct datas *d)
@@ -229,6 +237,6 @@ struct datas *create_data(struct payload *payload, double deltaV_min,
         free_datas(d);
         return NULL;
     }
-    d->beta = 1/8;
+    d->beta = 1./8.;
     return d;
 }

@@ -63,8 +63,8 @@ struct engine
     double cost;
     enum fuel_type fuel;
     enum diameter diam;
-    int ISP_atm;
-    int ISP_vac;
+    long ISP_atm;
+    long ISP_vac;
     double thrust_atm;
     double consumption;
     double gimbal;

@@ -4,6 +4,8 @@ CFLAGS = -Wall -Werror -Wextra -std=gnu99
 OBJ = rocket.o utils.o reader.o
 TOBJ = test_utils.o
 
+all: test
+
 test: CFLAGS += -fsanitize=address -g
 test: LDLIBS += -lcriterion -fsanitize=address
 test: $(OBJ) $(TOBJ)
