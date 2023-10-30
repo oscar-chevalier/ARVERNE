@@ -42,5 +42,5 @@ bool define_tanks(struct datas *d)
         return false;
     }
     d->tanks = tanks;
-    return read_tanks(d, "tanks.csv") > 0;
+    return read_tanks(d, "parts/tanks.csv") > 0;
 }

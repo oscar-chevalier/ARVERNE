@@ -42,5 +42,5 @@ bool define_engines(struct datas *d)
         return false;
     }
     d->engines = engines;
-    return read_engines(d, "engines.csv") > 0;
+    return read_engines(d, "parts/engines.csv") > 0;
 }

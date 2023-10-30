@@ -42,5 +42,5 @@ bool define_decouplers(struct datas *d)
         return false;
     }
     d->decouplers = decouplers;
-    return read_decouplers(d, "decouplers.csv") > 0;
+    return read_decouplers(d, "parts/decouplers.csv") > 0;
 }
