@@ -3,13 +3,6 @@
 
 #include "utils.h"
 
-struct part
-{
-    void *part_type;
-    struct part *prev;
-    struct part *next;
-};
-
 struct stage
 {
     enum fuel_type fuel;

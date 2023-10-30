@@ -1,6 +1,8 @@
 #include <criterion/criterion.h>
 
-#include "utils.h"
+#include "../structures/datas.h"
+#include "../structures/payload.h"
+#include "../structures/utils.h"
 
 Test(test_utils, create_payload)
 {
@@ -16,7 +18,7 @@ Test(test_utils, create_payload)
 Test(test_utils, create_data)
 {
     struct payload *payload = create_payload(10, SMALL, 1, 1);
-    struct datas *d = create_data(payload, 1000, 0);
+    struct datas *d = create_datas(payload, 1000, 0);
     cr_assert_neq(d, NULL);
     cr_expect_eq(d->deltaV_min, 1000);
     cr_expect_eq(d->cost_max, 0);

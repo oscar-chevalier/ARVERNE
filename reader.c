@@ -4,7 +4,15 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "utils.h"
+#include "structures/decoupler.h"
+#include "structures/decouplers.h"
+#include "structures/engine.h"
+#include "structures/engines.h"
+#include "structures/engine_plate.h"
+#include "structures/engine_plates.h"
+#include "structures/tank.h"
+#include "structures/tanks.h"
+#include "structures/utils.h"
 
 static char **cut_line(char *line)
 {
